@@ -1,0 +1,36 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    /* ===== File Layout ===== */
+    "rootDir": "./src",             // Source files
+    "outDir": "./dist",             // Compiled output
+
+    /* ===== Environment Settings ===== */
+    "module": "commonjs",           // CommonJS is safest for Node.js unless you're going full ESM
+    "target": "ES2020",              // Good balance for Node 14+
+    "lib": ["ES2020"],               // JavaScript features available
+    "types": ["node"],               // Node.js types
+
+    /* ===== Output Settings ===== */
+    "sourceMap": true,               // Enables debugging in TS
+    "declaration": true,             // Generates .d.ts files
+    "declarationMap": true,          // Source maps for declarations
+
+    /* ===== Strict Type Checking ===== */
+    "strict": true,                  // Enables all strict rules
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    /* ===== Module & Import Settings ===== */
+    "esModuleInterop": true,         // Allows default imports for CommonJS modules
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,       // Import JSON files
+    "isolatedModules": true,         // Ensures each file is safely transpiled
+
+    /* ===== Build Optimization ===== */
+    "skipLibCheck": true,            // Skips type checking of libraries
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"],           // Files to include
+  "exclude": ["node_modules", "dist"] // Ignore these folders
+}
