@@ -11,7 +11,7 @@ const user_routes_1 = __importDefault(require("./routes/user.routes"));
 const app = (0, express_1.default)();
 // Middleware
 app.use((0, cors_1.default)({
-    origin: ["http://localhost:5173"],
+    origin: ["https://www.develevate.tech"],
     credentials: true,
 }));
 app.use(express_1.default.json());
