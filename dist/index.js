@@ -21,7 +21,7 @@ app.use("/api/users", user_routes_1.default);
 // Global Error Handler
 // app.use(errorMiddleware);
 app.listen(3000, () => {
-    console.log("Server is Running");
+    console.log("Server is Running on 3000");
 });
 exports.default = app;
 //# sourceMappingURL=index.js.map

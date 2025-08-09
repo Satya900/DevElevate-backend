@@ -3,9 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.chatbot = void 0;
 const generative_ai_1 = require("@google/generative-ai");
 // Initialize Gemini AI
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "AIzaSyAYBRZn0XIaaNwkcXqFXKSF7rDousdYjhw";
 const genAI = new generative_ai_1.GoogleGenerativeAI(GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 const chatbot = async (req, res) => {
     try {
         const { messages } = req.body;
@@ -26,18 +26,41 @@ const chatbot = async (req, res) => {
             role: msg.role === 'user' ? 'user' : 'model',
             parts: [{ text: msg.content }],
         }));
-        // Start a chat session
-        const chat = model.startChat({
-            history: formattedMessages.slice(0, -1), // All but the last message as history
-            generationConfig: {
-                maxOutputTokens: 1000,
-            },
+        // Ensure the conversation starts with a user message
+        const validMessages = formattedMessages.filter((msg, index) => {
+            // First message must be from user
+            if (index === 0)
+                return msg.role === 'user';
+            return true;
         });
-        // Send the latest message
-        const latestMessage = formattedMessages[formattedMessages.length - 1].parts[0].text;
-        const result = await chat.sendMessage(latestMessage);
-        const response = await result.response;
-        const assistantMessage = response.text();
+        // If no valid messages or first message isn't from user
+        if (validMessages.length === 0 || validMessages[0].role !== 'user') {
+            return res.status(400).json({
+                success: false,
+                message: "Conversation must start with a user message"
+            });
+        }
+        let assistantMessage;
+        if (validMessages.length === 1) {
+            // If only one message (the current user message), start a new chat
+            const result = await model.generateContent(validMessages[0].parts[0].text);
+            const response = await result.response;
+            assistantMessage = response.text();
+        }
+        else {
+            // If multiple messages, use chat history
+            const history = validMessages.slice(0, -1); // All but the last message
+            const latestMessage = validMessages[validMessages.length - 1].parts[0].text;
+            const chat = model.startChat({
+                history: history,
+                generationConfig: {
+                    maxOutputTokens: 1000,
+                },
+            });
+            const result = await chat.sendMessage(latestMessage);
+            const response = await result.response;
+            assistantMessage = response.text();
+        }
         if (!assistantMessage) {
             throw new Error('No response from AI assistant');
         }
